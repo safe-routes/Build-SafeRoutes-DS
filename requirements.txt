@@ -1,0 +1,10 @@
+flask
+flask-cors
+flask-sqlalchemy
+python-decouple 
+python-dotenv 
+gunicorn 
+numpy
+pandas
+category-encoders
+sklearn
