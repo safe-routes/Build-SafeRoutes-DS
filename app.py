@@ -14,7 +14,7 @@ def create_app():
     def root():
         return render_template('base.html', title='Home')
 
-    @app.route('/user/<address>')
+    @app.route('/predict/<address>')
     def user(address=None):
         json_out = accident_predictor(address)
         return json_out
