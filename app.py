@@ -24,8 +24,8 @@ def user(address=None):
 
 
 if __name__ == '__main__':
-    #app.run(debug=False, host='0.0.0.0')
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0')
+    #app.run(debug=True)
 
 #  to run from terminal : 
 #      change line 25 to  app.run(debug=True)
