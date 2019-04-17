@@ -7,9 +7,6 @@ import sys
 import pandas as pd
 
 
-def accident_predictor(address):
-    return 'json output'
-
 def create_app():
     """ create + config Flask app obj """
     app = Flask(__name__)
@@ -24,7 +21,11 @@ def create_app():
         json_out = accident_predictor(address)
         return json_out
     return app
-     
+
+def accident_predictor(address):
+    return 'json output'
+
+
 #  to run from terminal : cd to where app.py resides)
 #                         set FLASK_APP=TWpred:APP
 #                   +     flask run   OR    flask shell
