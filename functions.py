@@ -10,3 +10,6 @@ def clean_text(text):
     using simple regex statements. May not be needed.
     """
     return ''.join(re.sub(r'(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\ / \ / \S+)', '', text))
+
+def accident_predictor(address):
+    return
