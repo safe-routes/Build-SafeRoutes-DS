@@ -2,8 +2,13 @@
 """
 from flask import Flask, request, render_template
 from flask_cors import CORS
-from .functions import accident_predictor
+import re
+import sys
+import pandas as pd
 
+
+def accident_predictor(address):
+    return 'json output'
 
 def create_app():
     """ create + config Flask app obj """
