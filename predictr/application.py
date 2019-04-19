@@ -19,15 +19,13 @@ def root():
     return render_template('base.html', title='Home')
 
 """
---->>>> ONLY 3 FIELDS NEEDED TO MAKE PREDICTION <<<<---
+--->>>> FIELDS NEEDED TO MAKE PREDICTION <<<<---
 COUNTY
 WEATHER
 MONTH
 DAY_WEEK
 WRK_ZONE
 BINNED_HOUR
-
-{"COUNTY":"ALAMEDA","DAY_WEEK":"THURSDAY", "BINNED_HOUR":   }
 """
 
 
@@ -35,8 +33,12 @@ BINNED_HOUR
 def predict(query_str):
     prediction_inputs, weather_str = format_input(query_str)
     if weather_str == '':
+        # weather and other parameters NOT passed in
+        # predict on ['COUNTY', 'DAY_WEEK', 'BINNED_HOUR']
         gs = load('gridsearch.joblib')   
     else:
+        # weather and other parameters passed in
+        # predict on ['COUNTY', 'WEATHER', 'MONTH', 'DAY_WEEK', 'WRK_ZONE', 'BINNED_HOUR']
         gs = load('gridsearch_v3.joblib')   
     predictions = gs.predict(prediction_inputs)
     # format API output
@@ -81,21 +83,31 @@ def day_hour():
 
 
 # FUNCTION TO FORMAT API input string 
-#  input->  sample API input string(s)-> predict/ALAMEDA&weather=FOG&month=August&day=MONDAY&lgt=DAY&isWorkZone=1
+#  input->  sample API input string(s)-> predict/SAN FRANCISO&weather=FOG&month=August&day=MONDAY&lgt=DAY&isWorkZone=1
 #  ouputs -->  dataframe : prediction_inputs
 def format_input(s):
     weekday, hour = day_hour()
     # parse input string for model input values
     county_str = s.split('&')[0]
-    weather_str = s[s.find("&weather=")+9:s.find("&month=")]
-    
-    day_str = s[s.find("&day=")+5:s.find("&lgt=")]
-    workzone_str = s[s.find("&isWorkZone=")+12:]
-    month_str = s[s.find("&month=")+7:s.find("&day=")]
-    month_dict = dict((v,k) for k,v in enumerate(calendar.month_name))
-    for key, value in month_dict.items():
-        if key == month_str:
-            month_num = value
+
+    weather_str = ''
+    day_str = ''
+    workzone_str = ''
+    month_str = ''
+    month_num = 1
+    if s.find("&weather=") > 0:
+        weather_str = s[s.find("&weather=")+9:s.find("&month=")]
+    if s.find("&day=") > 0:
+        day_str = s[s.find("&day=")+5:s.find("&lgt=")]
+    if s.find("&isWorkZone=") > 0:
+        workzone_str = s[s.find("&isWorkZone=")+12:]
+    if s.find("&month=") > 0:
+        month_str = s[s.find("&month=")+7:s.find("&day=")]
+        month_num = 1
+        month_dict = dict((v,k) for k,v in enumerate(calendar.month_name))
+        for key, value in month_dict.items():
+            if key == month_str:
+                month_num = value
 
     
     counties_list = [county_str]
@@ -106,7 +118,7 @@ def format_input(s):
         else:
             tuples_list.append((county, weather_str, month_num, day_str, workzone_str, hour))
     if weather_str == '':
-        prediction_inputs = (pd.DataFrame(tuples_list, columns=['COUNTY', 'DAY_WEEK', 'BINNED_HOUR' ])).values
+        prediction_inputs = (pd.DataFrame(tuples_list, columns=['COUNTY', 'DAY_WEEK', 'BINNED_HOUR'])).values
     else:
         prediction_inputs = (pd.DataFrame(tuples_list, columns=['COUNTY', 'WEATHER', 'MONTH', 'DAY_WEEK', 'WRK_ZONE', 'BINNED_HOUR'])).values
     return prediction_inputs, weather_str
@@ -117,7 +129,8 @@ if __name__ == '__main__':
 
     #  --- for terminal debugging ------
     #input_str = 'ALAMEDA&weather=SNOW&month=August&day=MONDAY&lgt=DAY&isWorkZone=1'
-    #input_str = 'ALAMEDA'
+    #input_str = 'SAN FRANCISO&weather=CLEAR&month=February&day=MONDAY&lgt=DAY&isWorkZone=0'
+    #input_str = 'SAN FRANCISO'
     #print(predict(input_str))
 
 # to run from terminal : 
